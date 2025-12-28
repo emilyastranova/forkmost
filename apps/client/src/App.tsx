@@ -1,6 +1,8 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import SetupWorkspace from "@/pages/auth/setup-workspace.tsx";
 import LoginPage from "@/pages/auth/login";
+import MfaChallengePage from "@/pages/auth/mfa-challenge";
+import MfaSetupRequiredPage from "@/pages/auth/mfa-setup-required";
 import Home from "@/pages/dashboard/home";
 import Page from "@/pages/page/page";
 import AccountSettings from "@/pages/settings/account/account-settings";
@@ -44,11 +46,11 @@ export default function App() {
         <Route path={"/forgot-password"} element={<ForgotPassword />} />
         <Route path={"/password-reset"} element={<PasswordReset />} />
         <Route path={"/auth/oidc/callback"} element={<OidcCallbackPage />} />
-        { /* <Route path={"/login/mfa"} element={<MfaChallengePage />} />
+        <Route path={"/login/mfa"} element={<MfaChallengePage />} />
         <Route
           path={"/login/mfa/setup"}
           element={<MfaSetupRequiredPage />}
-        /> */ }
+        />
 
         {!isCloud() && (
           <Route path={"/setup/register"} element={<SetupWorkspace />} />

@@ -40,7 +40,7 @@ export class AuthService {
     private mailService: MailService,
     private domainService: DomainService,
     @InjectKysely() private readonly db: KyselyDB,
-  ) {}
+  ) { }
 
   async login(loginDto: LoginDto, workspaceId: string) {
     const user = await this.userRepo.findByEmail(loginDto.email, workspaceId, {
@@ -65,6 +65,24 @@ export class AuthService {
     await this.userRepo.updateLastLogin(user.id, workspaceId);
 
     return this.tokenService.generateAccessToken(user);
+  }
+
+  async validateUser(email: string, password: string, workspaceId: string) {
+    const user = await this.userRepo.findByEmail(email, workspaceId, {
+      includePassword: true,
+    });
+
+    if (!user || user?.deletedAt) {
+      return null;
+    }
+
+    const isPasswordMatch = await comparePasswordHash(password, user.password);
+
+    if (!isPasswordMatch) {
+      return null;
+    }
+
+    return user;
   }
 
   async register(createUserDto: CreateUserDto, workspaceId: string) {

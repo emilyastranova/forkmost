@@ -14,6 +14,7 @@ export interface IUser {
   locale: string;
   createdAt: Date;
   updatedAt: Date;
+  mfa?: { isEnabled: boolean };
   role: string;
   workspaceId: string;
   deactivatedAt: Date;

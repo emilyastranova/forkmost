@@ -43,11 +43,38 @@ export async function passwordReset(data: IPasswordReset): Promise<{ requiresLog
   return req.data;
 }
 
-export async function verifyUserToken(data: IVerifyUserToken): Promise<any> {
-  return api.post<any>("/auth/verify-token", data);
-}
+export const verifyUserToken = async (data: IVerifyUserToken) => {
+  const response = await api.post("/auth/verify-token", data);
 
-export async function getCollabToken(): Promise<ICollabToken> {
-  const req = await api.post<ICollabToken>("/auth/collab-token");
-  return req.data;
-}
+  return response.data;
+};
+
+export const verifyMfa = async (data: ILogin & { token: string }) => {
+  const response = await api.post("/auth/mfa/verify", data);
+  return response.data;
+};
+
+export const generateMfaSecret = async () => {
+  const response = await api.post("/auth/mfa/generate");
+  return response.data;
+};
+
+export const enableMfa = async (data: { secret: string; token: string }) => {
+  const response = await api.post("/auth/mfa/enable", data);
+  return response.data;
+};
+
+export const disableMfa = async () => {
+  const response = await api.post("/auth/mfa/disable");
+  return response.data;
+};
+
+export const setupGenerateMfaSecret = async (data: ILogin) => {
+  const response = await api.post("/auth/mfa/setup/generate", data);
+  return response.data;
+};
+
+export const setupEnableMfa = async (data: ILogin & { secret: string; token: string }) => {
+  const response = await api.post("/auth/mfa/setup/enable", data);
+  return response.data;
+};
