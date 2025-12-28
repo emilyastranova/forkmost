@@ -62,8 +62,8 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: |
-            ghcr.io/vito0912/forkmost
-            vito0912/forkmost
+            ghcr.io/emilyastranova/forkmost
+            emilyastranova/forkmost
           tags: |
             # Always
             type=raw,value=dev
