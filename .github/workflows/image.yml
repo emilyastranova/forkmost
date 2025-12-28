@@ -63,7 +63,6 @@ jobs:
         with:
           images: |
             ghcr.io/emilyastranova/forkmost
-            emilyastranova/forkmost
           tags: |
             # Always
             type=raw,value=dev
