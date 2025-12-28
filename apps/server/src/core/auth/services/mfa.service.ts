@@ -18,7 +18,7 @@ export class MfaService {
     private readonly userRepo: UserRepo,
     private readonly tokenService: TokenService,
     @InjectKysely() private readonly db: KyselyDB,
-  ) {}
+  ) { }
 
   generateSecret(user: User) {
     const secret = new OTPAuth.Secret({ size: 20 });
@@ -45,20 +45,20 @@ export class MfaService {
     }
 
     await this.db
-      .insertInto('user_mfa')
+      .insertInto('userMfa')
       .values({
-        user_id: userId,
-        workspace_id: workspaceId,
+        userId: userId,
+        workspaceId: workspaceId,
         secret: secret,
-        is_enabled: true,
+        isEnabled: true,
         method: 'totp',
       })
       .onConflict((oc) =>
-        oc.columns(['user_id']).doUpdateSet({
+        oc.columns(['userId']).doUpdateSet({
           secret: secret,
-          is_enabled: true,
+          isEnabled: true,
           method: 'totp',
-          updated_at: new Date(),
+          updatedAt: new Date(),
         }),
       )
       .execute();
@@ -68,9 +68,9 @@ export class MfaService {
 
   async disableMfa(userId: string, workspaceId: string) {
     await this.db
-      .deleteFrom('user_mfa')
-      .where('user_id', '=', userId)
-      .where('workspace_id', '=', workspaceId)
+      .deleteFrom('userMfa')
+      .where('userId', '=', userId)
+      .where('workspaceId', '=', workspaceId)
       .execute();
     return true;
   }
@@ -89,13 +89,13 @@ export class MfaService {
 
   async verifyMfaLogin(userId: string, workspaceId: string, token: string) {
     const userMfa = await this.db
-      .selectFrom('user_mfa')
+      .selectFrom('userMfa')
       .selectAll()
-      .where('user_id', '=', userId)
-      .where('workspace_id', '=', workspaceId)
+      .where('userId', '=', userId)
+      .where('workspaceId', '=', workspaceId)
       .executeTakeFirst();
 
-    if (!userMfa || !userMfa.is_enabled) {
+    if (!userMfa || !userMfa.isEnabled) {
       throw new UnauthorizedException('MFA not enabled for this user');
     }
 
@@ -117,33 +117,33 @@ export class MfaService {
     });
 
     if (!user) {
-        // Auth service will handle the error
-        return null;
+      // Auth service will handle the error
+      return null;
     }
 
-    const userHasMfa = user.mfa?.isEnabled || false;
+    const userHasMfa = (user as any).mfa?.isEnabled || false;
     const isMfaEnforced = workspace.enforceMfa || false;
     const requiresMfaSetup = isMfaEnforced && !userHasMfa;
 
     if (userHasMfa) {
-        // If code is provided in loginDto (needs to be added to DTO), verify it
-        // But for now, we returning metadata so client can redirect
-        return {
-            userHasMfa: true,
-            requiresMfaSetup: false,
-            isMfaEnforced,
-        };
+      // If code is provided in loginDto (needs to be added to DTO), verify it
+      // But for now, we returning metadata so client can redirect
+      return {
+        userHasMfa: true,
+        requiresMfaSetup: false,
+        isMfaEnforced,
+      };
     }
 
     if (requiresMfaSetup) {
-        return {
-            userHasMfa: false,
-            requiresMfaSetup: true,
-            isMfaEnforced,
-        };
+      return {
+        userHasMfa: false,
+        requiresMfaSetup: true,
+        isMfaEnforced,
+      };
     }
-    
+
     // MFA not required
-    return null; 
+    return null;
   }
 }

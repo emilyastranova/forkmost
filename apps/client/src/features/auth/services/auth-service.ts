@@ -78,3 +78,8 @@ export const setupEnableMfa = async (data: ILogin & { secret: string; token: str
   const response = await api.post("/auth/mfa/setup/enable", data);
   return response.data;
 };
+
+export async function getCollabToken(): Promise<ICollabToken> {
+  const req = await api.post<ICollabToken>("/auth/collab-token");
+  return req.data;
+}
